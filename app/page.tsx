@@ -1,65 +1,104 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React, { useState, useEffect } from 'react';
+import { supabase } from './lib/supabase';
+import Link from 'next/link';
+
+interface ITransaction {
+  id: string;
+  user_name: string;
+  amount: number;
+  type: 'recharge' | 'debit';
+  created_at: string;
+}
+
+interface ICard {
+  uid: string;
+  user_name: string;
+  balance: number;
+  status: string;
+}
+
+export default function HomePage() {
+  const [stats, setStats] = useState({ totalMembros: 0, totalSaldo: 0 });
+  const [recentTrans, setRecentTrans] = useState<ITransaction[]>([]);
+  const [recentMembers, setRecentMembers] = useState<ICard[]>([]);
+
+  useEffect(() => {
+    async function fetchDashboardData() {
+      const { data: cards } = await supabase.from('cards').select('balance');
+      if (cards) {
+        const total = cards.reduce((acc, curr) => acc + Number(curr.balance), 0);
+        setStats({ totalMembros: cards.length, totalSaldo: total });
+      }
+
+      const { data: trans } = await supabase.from('transactions').select('*').order('created_at', { ascending: false }).limit(5);
+      if (trans) setRecentTrans(trans as ITransaction[]);
+
+      const { data: members } = await supabase.from('cards').select('*').order('created_at', { ascending: false }).limit(5);
+      if (members) setRecentMembers(members as ICard[]);
+    }
+    fetchDashboardData();
+  }, []);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div style={styles.container}>
+      <h1 style={styles.title}>Painel de Controle 🪙</h1>
+      <p style={styles.subtitle}>Resumo geral do sistema BeitCoin.</p>
+
+      <div style={styles.statsGrid}>
+        <div style={styles.statCard}>
+          <span style={styles.statLabel}>MEMBROS ATIVOS</span>
+          <span style={styles.statValue}>{stats.totalMembros}</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div style={styles.statCard}>
+          <span style={styles.statLabel}>SALDO EM CIRCULAÇÃO</span>
+          <span style={{ ...styles.statValue, color: '#047857' }}>R$ {stats.totalSaldo.toFixed(2)}</span>
         </div>
-      </main>
+      </div>
+
+      <div style={styles.contentGrid}>
+        <section style={styles.section}>
+          <h2 style={styles.sectionTitle}>Atividade Recente</h2>
+          {recentTrans.map((t) => (
+            <div key={t.id} style={styles.listItem}>
+              <span style={styles.textDarkBold}>{t.user_name}</span>
+              <span style={{ fontWeight: '900', color: t.type === 'recharge' ? '#047857' : '#B91C1C' }}>
+                {t.type === 'recharge' ? '+' : '-'} R$ {Number(t.amount).toFixed(2)}
+              </span>
+            </div>
+          ))}
+          <Link href="/transacoes" style={styles.link}>Ver todo o histórico →</Link>
+        </section>
+
+        <section style={styles.section}>
+          <h2 style={styles.sectionTitle}>Últimos Cartões</h2>
+          {recentMembers.map((m) => (
+            <div key={m.uid} style={styles.listItem}>
+              <span style={styles.textDarkBold}>{m.user_name}</span>
+              <span style={styles.textDark}>{m.status === 'active' ? '✅ Ativo' : '🚫 Bloqueado'}</span>
+            </div>
+          ))}
+          <Link href="/membros" style={styles.link}>Gerenciar membros →</Link>
+        </section>
+      </div>
     </div>
   );
 }
+
+const styles: { [key: string]: React.CSSProperties } = {
+  container: { maxWidth: '1200px', margin: '0 auto' },
+  title: { color: '#000000', fontSize: '2.2rem', fontWeight: '800', marginBottom: '5px' },
+  subtitle: { color: '#1F2937', fontSize: '1.1rem', marginBottom: '40px', fontWeight: '500' },
+  statsGrid: { display: 'flex', gap: '20px', marginBottom: '40px' },
+  statCard: { backgroundColor: 'white', padding: '25px', borderRadius: '12px', flex: 1, border: '2px solid #E5E7EB', boxShadow: '0 4px 0px #E5E7EB' },
+  statLabel: { color: '#1F2937', fontSize: '0.85rem', fontWeight: '900', letterSpacing: '0.05em' },
+  statValue: { fontSize: '2.5rem', fontWeight: '900', color: '#000000', display: 'block', marginTop: '10px' },
+  contentGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' },
+  section: { backgroundColor: 'white', padding: '25px', borderRadius: '12px', border: '1px solid #D1D5DB' },
+  sectionTitle: { fontSize: '1.3rem', fontWeight: '800', marginBottom: '20px', color: '#000000', borderBottom: '2px solid #000', display: 'inline-block' },
+  listItem: { display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid #E5E7EB' },
+  textDarkBold: { color: '#000000', fontWeight: '700' },
+  textDark: { color: '#111827', fontWeight: '500' },
+  link: { display: 'block', marginTop: '20px', color: '#000000', textDecoration: 'underline', fontWeight: '800', fontSize: '0.95rem' }
+};
