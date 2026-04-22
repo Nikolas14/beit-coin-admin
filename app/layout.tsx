@@ -1,19 +1,18 @@
-import './globals.css';
-import Link from 'next/link';
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-br">
       <body style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F3F4F6' }}>
         {/* Sidebar */}
-        <nav style={styles.sidebar}>
+        {/* <nav style={styles.sidebar}>
           <div style={styles.logo}>Beit<span style={{color: '#FFC947'}}>Coin</span> 🪙</div>
           <div style={styles.menu}>
             <Link href="/" style={styles.navLink}>🏠 Início</Link>
             <Link href="/membros" style={styles.navLink}>👥 Membros / Cartões</Link>
             <Link href="/transacoes" style={styles.navLink}>📜 Transações</Link>
           </div>
-        </nav>
+        </nav> */}
 
         {/* Conteúdo da Página */}
         <main style={{ flex: 1, padding: '40px' }}>
