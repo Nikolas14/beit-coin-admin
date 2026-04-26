@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 30, 27, 75; /* Indigo 950 */
+  --background-start-rgb: 248, 250, 252; /* Slate 50 */
+  --background-end-rgb: 255, 255, 255;
+  
+  /* Cores Beitcoin */
+  --beitcoin-primary: #4f46e5;
+  --beitcoin-success: #10b981;
+  --beitcoin-error: #f43f5e;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  /* Remove o destaque azul ao tocar em botões no Android */
+  -webkit-tap-highlight-color: transparent;
+  /* Melhora o scroll no mobile */
+  -webkit-overflow-scrolling: touch;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: rgb(var(--background-start-rgb));
+  color: rgb(var(--foreground-rgb));
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  /* Impede que o usuário selecione textos (ajuda a parecer um App nativo) */
+  user-select: none;
+}
+
+/* Garante que botões e inputs tenham fontes consistentes */
+button, input {
+  font-family: inherit;
+}
+
+/* --- ANIMAÇÕES CUSTOMIZADAS --- */
+
+/* Fade In Suave */
+.animate-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Zoom In para Sucesso */
+.zoom-in {
+  animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Shake para Erro (Saldo insuficiente/Tag inválida) */
+.shake-in {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+/* Esconder scrollbars mas manter funcionalidade (Opcional) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Ajuste para o "Safe Area" de iPhones/Androids novos */
+.safe-padding-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}

@@ -1,83 +1,39 @@
-'use client';
+import Link from 'next/link';
 
-import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { IBeitcoinTag } from '@/interface/interfaces';
-import RegisterTagForm from './register/page';
-import TopUpModal from './TopUpModal';
-
-export default function BeitcoinDashboard() {
-  const [tags, setTags] = useState<IBeitcoinTag[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedTag, setSelectedTag] = useState<IBeitcoinTag | null>(null);
-
-  async function loadData() {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from('beitcoin_nfc_tags')
-      .select(`
-        *,
-        beitcoin_wallets ( id, balance )
-      `);
-
-    if (!error) setTags(data || []);
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    loadData();
-  }, []);
+export default function BeitcoinHub() {
+  const cards = [
+    { title: 'Terminal de Doação', desc: 'Realizar cobranças (Maquininha)', href: '/terminal', icon: '💰', color: 'bg-emerald-500' },
+    { title: 'Consulta de Saldo', desc: 'Verificar saldo do doador', href: '/saldo', icon: '🔍', color: 'bg-blue-500' },
+    { title: 'Painel de Gestão', desc: 'Cadastrar tags e recarregar', href: '/admin', icon: '⚙️', color: 'bg-indigo-600' },
+  ];
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-8 text-indigo-900">Beitcoin Control Panel 🪙</h1>
+    <main className="min-h-screen bg-gray-50 p-6 pb-24">
+      <header className="text-center py-10">
+        <h1 className="text-4xl font-black text-indigo-900 mb-2">Beitcoin 🪙</h1>
+        <p className="text-gray-500 font-medium">Selecione o modo de operação</p>
+      </header>
 
-      {/* Área de Cadastro */}
-      <section className="mb-10">
-        <RegisterTagForm onSuccess={loadData} />
-      </section>
+      <div className="max-w-md mx-auto grid gap-4">
+        {cards.map((card) => (
+          <Link key={card.href} href={card.href}>
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-5 active:scale-95 transition-transform hover:shadow-md">
+              <div className={`${card.color} w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-inner`}>
+                {card.icon}
+              </div>
+              <div className="flex-1">
+                <h2 className="text-xl font-bold text-gray-800">{card.title}</h2>
+                <p className="text-sm text-gray-500">{card.desc}</p>
+              </div>
+              <span className="text-gray-300 text-2xl font-light">→</span>
+            </div>
+          </Link>
+        ))}
+      </div>
 
-      {/* Tabela de Gestão */}
-      <section className="bg-white rounded-xl shadow-md border overflow-hidden">
-        <table className="w-full text-left">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              <th className="p-4 font-semibold text-gray-600">Doador / Alias</th>
-              <th className="p-4 font-semibold text-gray-600">UID da Tag</th>
-              <th className="p-4 font-semibold text-gray-600">Saldo Atual</th>
-              <th className="p-4 font-semibold text-gray-600 text-right">Ação</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {tags.map(tag => (
-              <tr key={tag.id} className="hover:bg-gray-50 transition-colors">
-                <td className="p-4 font-medium">{tag.alias}</td>
-                <td className="p-4 font-mono text-sm text-gray-500">{tag.tag_uid}</td>
-                <td className="p-4 font-bold text-green-600">
-                  R$ {tag.beitcoin_wallets?.[0]?.balance.toFixed(2) || '0.00'}
-                </td>
-                <td className="p-4 text-right">
-                  <button
-                    onClick={() => setSelectedTag(tag)}
-                    className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-md hover:bg-indigo-200 text-sm font-semibold"
-                  >
-                    Recarregar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {loading && <div className="p-10 text-center text-gray-400">Carregando dados...</div>}
-      </section>
-      {selectedTag && (
-        <TopUpModal
-          tag={{ id: selectedTag.id, alias: selectedTag.alias || '' }}
-          onClose={() => setSelectedTag(null)}
-          onSuccess={loadData}
-        />
-      )}
-    </div>
+      <footer className="mt-12 text-center text-gray-400 text-xs">
+        Belém, PA • {new Date().getFullYear()}
+      </footer>
+    </main>
   );
 }

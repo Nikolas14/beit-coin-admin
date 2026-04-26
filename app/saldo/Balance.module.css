@@ -1,0 +1,104 @@
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e0e7ff 0%, #ffffff 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 2.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.title {
+  color: #1e1b4b;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 2rem;
+}
+
+.balanceLabel {
+  color: #6366f1;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.amount {
+  font-size: 4rem;
+  font-weight: 900;
+  color: #1e1b4b;
+  margin: 0.5rem 0;
+}
+
+.donorName {
+  color: #475569;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.waitingBox {
+  padding: 3rem 1rem;
+  border: 2px dashed #e2e8f0;
+  border-radius: 2rem;
+  color: #94a3b8;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Adicione ao Balance.module.css */
+
+.historySection {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f1f5f9;
+  width: 100%;
+  text-align: left;
+}
+
+.historyTitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.transactionRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.transactionDate {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.transactionValue {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.positive { color: #10b981; } /* Verde para Recarga */
+.negative { color: #f43f5e; } /* Vermelho para Doação */
