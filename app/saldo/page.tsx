@@ -149,7 +149,7 @@ export default function CheckBalance() {
 
             <footer className="mt-10 text-center">
                 <p className="text-indigo-400/60 text-sm italic font-medium">
-                    "A Tzedaká é igual a todos os outros mandamentos juntos."
+                    "A Tzedaká salva da morte."
                 </p>
             </footer>
         </div>
